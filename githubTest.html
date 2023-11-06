@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Local Storage</title>
+    <style type="text/CSS">
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            background-color: lightblue;
+            font-family: Perpetua;
+        }
+
+        table, td, th {
+            border: 1px solid black;
+            padding: 4px;
+        }
+
+        th {
+            text-align: center;
+            color: white;
+            background-color: darkblue;
+        }
+
+        tr.oddrow {
+            background-color: white;
+        }
+
+        td {
+            text-align: center;
+        }
+    </style>
+    <script type="text/javascript">
+        function start() {
+            const buttona = document.getElementById("addButton");
+            buttona.addEventListener("click",addbook,false);
+            const buttonc = document.getElementById("removeAllButton");
+            buttonc.addEventListener("click",removebook,false);
+            show();//顯示的function
+        }
+        function addbook(){//加入項目
+            const book = new Object();//建立json物件
+            book.title = document.getElementById("title").value;
+            book.author = document.getElementById("author").value;
+            book.year = document.getElementById("year").value;
+            book.url = document.getElementById("url").value;
+            localStorage.setItem("ntou-" +new Date().getTime(), JSON.stringify(book));//key,value
+            document.getElementById("author").value = "";//清空輸入欄
+            document.getElementById("title").value = "";
+            document.getElementById("url").value = "";
+            document.getElementById("year").value = "";
+            show();
+        }
+        
+        function removebook(){//移除現有項目
+            var books=[];
+            for (var i=0; i<localStorage.length; i++){
+                    if (localStorage.key(i).startsWith("ntou-")){
+                        books[i] = localStorage.key(i);
+                    }
+            }
+            for (let i in books){
+                    localStorage.removeItem(books[i]);
+            }
+            //localStorage.clear();也可
+            window.alert("All items were removed!");
+            show();
+        }
+        function show(){//顯示資訊
+            var display=document.getElementById("display");
+            var show="";
+            var books=[];
+            var count=0;
+            for(var i=0;i<localStorage.length;i++){
+                if (localStorage.key(i).startsWith("ntou-")){
+                        books[i] = localStorage.key(i);
+                    }
+            }
+            console.log('1',books)
+            books.sort();
+            for(var i in books){
+                count+=1;
+                var info=JSON.parse(localStorage.getItem(books[i]));
+                var http="<a href = '" + info.url + "' target = '_blank'>";
+                if(count%2==1){//奇數
+                    show+= "<tr class = 'oddrow'><td>" + info.title + "</td><td>" + info.author + "</td><td>" + info.year + "</td><td>" + http + info.url + "</a></td></tr>";
+                }else if(count%2==0){//偶數
+                    show+= "<tr><td>" + info.title + "</td><td>" + info.author + "</td>\
+                            <td>" + info.year + "</td><td>" + http + info.url + "</a></td></tr>";
+                }
+
+            }
+            var tb="<table><tr><th>Title</th><th>Author</th><th>Year</th><th>URL</th>";//表格第一列 
+            display.innerHTML=tb+show+"</table>";
+        }
+        window.addEventListener("load",start,false);
+    </script>
+</head>
+
+<body>
+    <form action="#">
+        <p>
+            <label>Book Title:
+                <input id="title" type="text" >
+            </label>
+            <label>Author(s):<input id="author" type="text" ></label>
+            <label>Year:<input id="year" type="text" ></label>
+            <label>Book URL:<input id="url" type="text" ></label>
+        </p>
+        <p>
+            <input type="button" value="Add New Item" id="addButton">
+            <input type="button" value="Remove All Items" id="removeAllButton">
+        </p>
+        
+    </form>
+    <hr>
+    <div id="display"></div>
+</body>
+
+</html>
